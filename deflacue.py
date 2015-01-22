@@ -17,6 +17,8 @@ from copy import deepcopy
 from collections import defaultdict
 from subprocess import Popen, PIPE
 
+VERSION = (1, 0, 0)
+
 
 COMMENTS_VORBIS = (
     'TITLE',

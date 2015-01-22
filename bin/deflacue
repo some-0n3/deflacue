@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from deflacue.deflacue import main
+from deflacue import main
 
 
 if __name__ == '__main__':

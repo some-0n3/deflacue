@@ -20,7 +20,7 @@ setup(
     author='Igor `idle sign` Starikov',
     author_email='idlesign@yandex.ru',
 
-    packages=['deflacue'],
+    py_modules=['deflacue'],
     include_package_data=True,
     zip_safe=False,
 
