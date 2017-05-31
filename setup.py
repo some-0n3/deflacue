@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os
 from setuptools import setup
 from deflacue import VERSION
@@ -13,14 +14,15 @@ setup(
     version='.'.join(map(str, VERSION)),
     url='http://github.com/idlesign/deflacue',
 
-    description='deflacue is a SoX based audio splitter to split audio CD images incorporated with .cue files',
+    description='deflacue is a SoX based audio splitter to split audio CD '
+                'images incorporated with .cue files',
     long_description=README,
     license='BSD 3-Clause License',
 
     author='Igor `idle sign` Starikov',
     author_email='idlesign@yandex.ru',
 
-    packages=['deflacue'],
+    py_modules=['deflacue'],
     include_package_data=True,
     zip_safe=False,
 
