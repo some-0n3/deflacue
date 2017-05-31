@@ -298,7 +298,7 @@ class Deflacue(object):
             logging.debug('Metadata: %s\n', metadata)
             for key, val in COMMENTS_CUE_TO_VORBIS.items():
                 if key in metadata and metadata[key] is not None:
-                    add_comment.append('--add-comment="%s=%s"' % \
+                    add_comment.append('--add-comment="%s=%s"' %
                                        (val, metadata[key]))
         add_comment = ' '.join(add_comment)
 
