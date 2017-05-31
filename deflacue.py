@@ -232,7 +232,7 @@ class Deflacue(object):
         and the second is a tuple of stdout and stderr output.
         """
         logging.debug('Executing shell command: %s', command)
-        if (self._dry_run and supress_dry_run) or not self._dry_run:
+        if not self._dry_run or supress_dry_run:
             prc = Popen(command, shell=True, stdout=stdout)
             std = prc.communicate()
             return prc.returncode, std
