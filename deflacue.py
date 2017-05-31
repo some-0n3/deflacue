@@ -401,14 +401,15 @@ def main():
         help='Absolute or relative source path with .cue file(s).'
     )
     argparser.add_argument(
-        '-r', action='store_true',
+        '-r', '--recursive', action='store_true',
         help='Recursion flag to search directories under the source_path.',
     )
     argparser.add_argument(
-        '-d',
+        '-d', '--destination',
         help='Absolute or relative destination path for output audio file(s).'
     )
-    argparser.add_argument('-e', help='Cue Sheet file(s) encoding.')
+    argparser.add_argument('-e', '--encoding',
+                           help='Cue Sheet file(s) encoding.')
     argparser.add_argument(
         '--dry', action='store_true',
         help='Perform the dry run with no changes done to filesystem.',
@@ -417,14 +418,11 @@ def main():
                            help='Show debug messages while processing.')
 
     parsed = argparser.parse_args()
-    kwargs = {'source_path': parsed.source_path}
-
-    if parsed.e is not None:
-        kwargs['encoding'] = parsed.e
-
-    if parsed.d is not None:
-        kwargs['dest_path'] = parsed.d
-
+    kwargs = {
+        'source_path': parsed.source_path,
+        'encoding': parsed.encoding,
+        'dest_path': parsed.destination,
+    }
     if parsed.debug:
         kwargs['use_logging'] = logging.DEBUG
 
@@ -440,7 +438,7 @@ def main():
         if parsed.dry:
             deflacue.set_dry_run()
 
-        deflacue.do(parsed.r)
+        deflacue.do(parsed.recursive)
     except DeflacueError as e:
         logging.error(e)
 
