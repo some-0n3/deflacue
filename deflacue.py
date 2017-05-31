@@ -259,28 +259,26 @@ class Deflacue(object):
         """
         self._dry_run = True
 
-    def get_dir_files(self, recursive=False):
-        """Creates and returns dictionary of files in source directory.
+    def get_cue_files(self, recursive=False):
+        """Yield all directories and a list of their .cue files.
         `recursive` - if True search is also performed within subdirectories.
 
         """
-        logging.info('Enumerating files under the source path '
+        def is_cue(name):
+            """Check if the file is a .cue file."""
+            return os.path.splitext(name)[1].lower() == '.cue'
+
+        logging.info('Enumerating cue-files under the source path '
                      '(recursive=%s) ...', recursive)
         if recursive:
-            return {os.path.join(self.source, r): f
-                    for r, _, f in os.walk(self.source)}
-        return {self.source: [f for f in os.listdir(self.source)
-                              if os.path.isfile(os.path.join(self.source, f))]}
-
-    def filter_target_extensions(self, files_dict):
-        """Takes file dictionary created with `get_dir_files` and returns
-        dictionary of the same kind containing only audio files of supported
-        types.
-
-        """
-        logging.info('Filtering .cue files ...')
-        return {d: sorted(f for f in l if os.path.splitext(f)[1] == '.cue')
-                for d, l in files_dict.items() if not d.endswith('deflacue')}
+            for root, _, files in os.walk(self.source):
+                cue_files = sorted([f for f in files if is_cue(f)])
+                if cue_files:
+                    yield os.path.join(self.source, root), cue_files
+        else:
+            files = [f for f in os.listdir(self.source)
+                     if os.path.isfile(os.path.join(self.source, f))]
+            yield self.source, sorted([f for f in files if is_cue(f)])
 
     def sox_check_is_available(self):
         """Checks whether SoX is available."""
@@ -355,10 +353,7 @@ class Deflacue(object):
         """Main method processing .cue files in batch."""
         initial_cwd = os.getcwd()
 
-        files = self.get_dir_files(recursive)
-        files_dict = self.filter_target_extensions(files)
-
-        for path in sorted(files_dict.keys()):
+        for path, cue_files in sorted(self.get_cue_files(recursive)):
             os.chdir(path)
             logging.info('\n%s\n      Working on: %s\n', '=' * 40, path)
 
@@ -374,7 +369,7 @@ class Deflacue(object):
             self._create_directory(target_path)
             logging.info('Target (output) path: %s', target_path)
 
-            for cue_file in files_dict[path]:
+            for cue_file in cue_files:
                 self.process_cue(os.path.join(path, cue_file), target_path)
 
         os.chdir(initial_cwd)
