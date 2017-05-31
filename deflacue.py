@@ -243,7 +243,7 @@ class Deflacue(object):
         logging.basicConfig(level=verbosity_lvl,
                             format='%(levelname)s: %(message)s')
 
-    def _create_target_path(self, path):
+    def _create_directory(self, path):
         """Creates a directory for target files."""
         if not os.path.exists(path) and not self._dry_run:
             logging.debug('Creating target path: %s ...', path)
@@ -339,7 +339,7 @@ class Deflacue(object):
             pass
 
         bundle_path = os.path.join(target_path, cd_info['PERFORMER'], title)
-        self._create_target_path(bundle_path)
+        self._create_directory(bundle_path)
 
         tracks_count = len(tracks)
         for track in tracks:
@@ -371,7 +371,7 @@ class Deflacue(object):
                 # there named after the directory we are working on.
                 target_path = os.path.join(self.target, os.path.basename(path))
 
-            self._create_target_path(target_path)
+            self._create_directory(target_path)
             logging.info('Target (output) path: %s', target_path)
 
             for cue_file in files_dict[path]:
