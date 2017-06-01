@@ -3,7 +3,7 @@ include LICENSE
 include AUTHORS
 include README.rst
 
-include bin/letmehear
+include bin/deflacue
 
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]

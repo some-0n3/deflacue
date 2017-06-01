@@ -9,14 +9,14 @@ Ubuntu users may install the following SoX packages: `sox`, `libsox-fmt-all`.
 
 deflacue can function both as a Python module and in command line mode.
 """
-import os
-import logging
 import argparse
+import logging
+import os
 import re
 
 from io import open  # Py2 support
 from copy import deepcopy
-from subprocess import Popen, PIPE
+from subprocess import PIPE, Popen
 
 
 VERSION = (1, 0, 0)
