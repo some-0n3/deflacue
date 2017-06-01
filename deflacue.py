@@ -12,10 +12,12 @@ deflacue can function both as a Python module and in command line mode.
 import os
 import logging
 import argparse
+import re
 
 from io import open  # Py2 support
 from copy import deepcopy
 from subprocess import Popen, PIPE
+
 
 VERSION = (1, 0, 0)
 
@@ -46,6 +48,8 @@ COMMENTS_CUE_TO_VORBIS = {
     'GENRE': 'GENRE',
     'DATE': 'DATE',
 }
+
+TIME_PATTERN = re.compile(r'(?P<mm>\d+):(?P<ss>\d\d):(?P<ff>\d\d)')
 
 
 class DeflacueError(Exception):
@@ -104,27 +108,20 @@ class CueParser(object):
     def _unquote(self, in_str):
         return in_str.strip(' "')
 
-    def _timestr_to_sec(self, timestr):
-        """Converts `mm:ss:` time string into seconds integer."""
-        splitted = timestr.split(':')[:-1]
-        splitted.reverse()
-        seconds = 0
-        for i, chunk in enumerate(splitted, 0):
-            factor = pow(60, i)
-            if i == 0:
-                factor = 1
-            seconds += int(chunk) * factor
-        return seconds
-
     def _timestr_to_samples(self, timestr):
         """Converts `mm:ss:ff` time string into samples integer, assuming the
         CD sampling rate of 44100Hz."""
         seconds_factor = 44100
         # 75 frames per second of audio
         frames_factor = seconds_factor // 75
-        full_seconds = self._timestr_to_sec(timestr)
-        frames = int(timestr.split(':')[-1])
-        return full_seconds * seconds_factor + frames * frames_factor
+
+        match = TIME_PATTERN.match(timestr)
+        if not match:
+            raise ValueError('"{}" is not a valid time string (it sould be'
+                             ' "mm:ss:ff")'.format(timestr))
+        parsed = {key: int(val) for key, val in match.groupdict().items()}
+        seconds = parsed['mm'] * 60 + parsed['ss']
+        return seconds * seconds_factor + parsed['ff'] * frames_factor
 
     def _in_global_context(self):
         return self._current_context == self._context_global
