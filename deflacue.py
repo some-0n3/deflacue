@@ -64,9 +64,8 @@ class CueParser(object):
             'DATE': None,
             'FILE': None,
             'COMMENT': None,
-            }
-        self._context_tracks = []
-
+        }
+        self._context_tracks = tracks = []
         self._current_context = self._context_global
         try:
             with open(cue_file, encoding=encoding) as f:
@@ -76,25 +75,20 @@ class CueParser(object):
                                 'use -encoding command line argument to set '
                                 'correct encoding.')
 
+        lines = [l.strip() for l in lines]
+        lines = [l for l in lines if l]
         for line in lines:
-            if line.strip():
-                command, args = line.strip().split(' ', 1)
-                logging.debug('Command `%s`. Args: %s', command, args)
-                method = getattr(self, 'cmd_%s' % command.lower(), None)
-                if method is not None:
-                    method(args)
-                else:
-                    logging.warning('Unknown command `%s`. Skipping ...',
-                                    command)
+            command, args = line.split(' ', 1)
+            logging.debug('Command `%s`. Args: %s', command, args)
+            method = getattr(self, 'cmd_%s' % command.lower(), None)
+            if method is not None:
+                method(args)
+            else:
+                logging.warning('Unknown command `%s`. Skipping ...', command)
 
-        for idx, track_data in enumerate(self._context_tracks):
-            track_end_pos = None
-            try:
-                track_end_pos = \
-                    self._context_tracks[idx + 1]['POS_START_SAMPLES']
-            except IndexError:
-                pass
-            track_data['POS_END_SAMPLES'] = track_end_pos
+        for current, _next in zip(tracks, tracks[1:]):
+            current['POS_END_SAMPLES'] = _next['POS_START_SAMPLES']
+        tracks[-1]['POS_END_SAMPLES'] = None
 
     def get_data_global(self):
         """Returns a dictionary with global CD data."""
