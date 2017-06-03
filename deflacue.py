@@ -369,7 +369,7 @@ class Deflacue(object):
 
 def main():
 
-    argparser = argparse.ArgumentParser('deflacue.py')
+    argparser = argparse.ArgumentParser('deflacue')
     argparser.add_argument(
         'source_path',
         help='Absolute or relative source path with .cue file(s).'
