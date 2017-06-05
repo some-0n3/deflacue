@@ -215,7 +215,6 @@ class Deflacue(object):
 
         if destination is not None:
             self.target = os.path.abspath(destination)
-            os.chdir(self.source)
 
     def _process_command(self, command, stdout=None, supress_dry_run=False):
         """Executes shell command with subprocess.Popen.
@@ -261,6 +260,11 @@ class Deflacue(object):
 
         logging.info('Enumerating cue-files under the source path '
                      '(recursive=%s) ...', recursive)
+
+        if os.path.isfile(self.source):
+            yield os.path.dirname(self.source), [os.path.basename(self.source)]
+            return
+
         if recursive:
             for root, _, files in os.walk(self.source):
                 cue_files = sorted([f for f in files if is_cue(f)])
